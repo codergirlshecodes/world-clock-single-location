@@ -1,49 +1,71 @@
-document.addEventListener('DOMContentLoaded', function() {
-  const defaultCity = 'Miami';
+document.addEventListener('DOMContentLoaded', function () {
+  const defaultCity = 'miami';
 
-  function updateDateTime(city) {
-    let newYorkTime = moment().tz('America/New_York');
-    let cityTime;
+  function updateTime() {
+    let miamiElement = document.querySelector("#miami");
+    if (miamiElement) {
+      let miamiDateElement = miamiElement.querySelector(".date");
+      let miamiTimeElement = miamiElement.querySelector(".time");
+      let miamiTime = moment().tz("America/New_York");
 
-    switch (city) {
-      case 'Miami':
-        cityTime = newYorkTime.clone().tz('America/New_York');
-        break;
-      case 'Austin':
-        cityTime = newYorkTime.clone().tz('America/Chicago');
-        break;
-      case 'Charlotte':
-        cityTime = newYorkTime.clone().tz('America/New_York');
-        break;
-      case 'Seattle':
-        cityTime = newYorkTime.clone().tz('America/Los_Angeles');
-        break;
-      default:
-        cityTime = newYorkTime.clone();
+      miamiDateElement.innerHTML = miamiTime.format("MMMM Do YYYY");
+      miamiTimeElement.innerHTML = miamiTime.format("h:mm:ss [<small>]A[</small>]");
     }
 
-    const dateElement = document.getElementById(`${city}Date`);
-    const timeElement = document.getElementById(`${city}Time`);
+    let austinElement = document.querySelector("#austin");
+    if (austinElement) {
+      let austinDateElement = austinElement.querySelector(".date");
+      let austinTimeElement = austinElement.querySelector(".time");
+      let austinTime = moment().tz("America/Chicago");
 
-    dateElement.textContent = cityTime.format('MMMM Do, YYYY');
-    timeElement.textContent = cityTime.format('h:mm:ss A');
+      austinDateElement.innerHTML = austinTime.format("MMMM Do YYYY");
+      austinTimeElement.innerHTML = austinTime.format("h:mm:ss [<small>]A[</small>]");
+    }
+
+    let charlotteElement = document.querySelector("#charlotte");
+    if (charlotteElement) {
+      let charlotteDateElement = charlotteElement.querySelector(".date");
+      let charlotteTimeElement = charlotteElement.querySelector(".time");
+      let charlotteTime = moment().tz("America/New_York");
+
+      charlotteDateElement.innerHTML = charlotteTime.format("MMMM Do YYYY");
+      charlotteTimeElement.innerHTML = charlotteTime.format("h:mm:ss [<small>]A[</small>]");
+    }
+
+    let seattleElement = document.querySelector("#seattle");
+    if (seattleElement) {
+      let seattleDateElement = seattleElement.querySelector(".date");
+      let seattleTimeElement = seattleElement.querySelector(".time");
+      let seattleTime = moment().tz("America/Los_Angeles");
+
+      seattleDateElement.innerHTML = seattleTime.format("MMMM Do YYYY");
+      seattleTimeElement.innerHTML = seattleTime.format("h:mm:ss [<small>]A[</small>]");
+    }
   }
 
-  
-  let today = moment();
-  document.getElementById(`${defaultCity}Date`).textContent = today.format('MMMM Do, YYYY');
-  document.getElementById(`${defaultCity}Time`).textContent = today.format('h:mm:ss A');
+  function updateCity(event) {
+    let cityTimeZone = event.target.value;
+    if (cityTimeZone === "current") {
+      cityTimeZone = moment.tz.guess();
+    }
+    let cityName = event.target.options[event.target.selectedIndex].text;
+    let cityTime = moment().tz(cityTimeZone);
+    let citiesElement = document.querySelector("#cities");
+    citiesElement.innerHTML = `
+      <div class="city" id="${cityName.toLowerCase()}">
+        <div>
+          <h2>${cityName}</h2>
+          <div class="date">${cityTime.format("MMMM Do YYYY")}</div>
+        </div>
+        <div class="time">${cityTime.format("h:mm:ss")} <small>${cityTime.format("A")}</small></div>
+      </div>
+      <a href="/">All cities</a>
+    `;
+  }
 
-  setInterval(function() {
-   
-    updateDateTime('Austin');
-    updateDateTime('Charlotte');
-    updateDateTime('Miami');
-    updateDateTime('Seattle');
+  updateTime();
+  setInterval(updateTime, 1000);
 
-
-    today = moment();
-    document.getElementById(`${defaultCity}Date`).textContent = today.format('MMMM Do, YYYY');
-    document.getElementById(`${defaultCity}Time`).textContent = today.format('h:mm:ss A');
-  }, 5000);
+  let citiesSelectElement = document.querySelector("#city");
+  citiesSelectElement.addEventListener("change", updateCity);
 });
